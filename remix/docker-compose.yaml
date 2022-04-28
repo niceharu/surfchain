@@ -1,0 +1,7 @@
+version: '2'
+services:
+  remix:
+    image: remixproject/remix-ide:remix_live
+    container_name: remix
+    ports:
+      - "8080:80" # web service

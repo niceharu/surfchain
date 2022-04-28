@@ -1,0 +1,7 @@
+version: '2'
+services:
+  init:
+    image: ethereum/client-go
+    command: account list
+    volumes:
+      - ./data-node1:/root/.ethereum

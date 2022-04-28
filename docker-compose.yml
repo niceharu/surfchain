@@ -1,0 +1,81 @@
+version: '2'
+services:
+  node1:
+    image: ethereum/client-go
+    container_name: node1
+    command: 
+      --networkid=2731
+      --port=30303
+      --maxpeers=10
+      --allow-insecure-unlock
+      --nodiscover
+      --http
+      --http.addr="0.0.0.0"
+      --http.port=8545
+      --http.corsdomain="*"
+      --http.api="admin, debug, web3, eth, txpool, personal, ethash, miner, net"
+      --unlock="3c1bcad30d646265e5aafc7145295f84ca88e700"
+      --password="/root/.ethereum/password"
+      --miner.etherbase="3c1bcad30d646265e5aafc7145295f84ca88e700" 
+      --ethstats="node1:SURF@eth-netstats:3000"
+      --gcmode="archive"
+      --syncmode="full"
+      --mine 
+      --miner.threads=1
+      --miner.gasprice=0
+    volumes:
+      - ./data-node1:/root/.ethereum:rw
+    ports:
+      - "30303:30303" # peer 연결용
+      - "30303:30303/udp" # peer 연결용
+      - "8545:8545"   # remix 연결용
+    networks:
+      priv-eth-net:
+        ipv4_address: 172.15.200.2
+
+  node2:
+    image: ethereum/client-go
+    container_name: node2
+    depends_on:
+      - node1
+    command: 
+      --networkid=2731
+      --port=30304
+      --maxpeers=10
+      --allow-insecure-unlock
+      --nodiscover
+      --http
+      --http.addr="0.0.0.0"
+      --http.port=8546
+      --http.corsdomain="*"
+      --http.api="admin, debug, web3, eth, txpool, personal, ethash, miner, net"
+      --ethstats="node2:SURF@eth-netstats:3000"
+    volumes:
+      - ./data-node2:/root/.ethereum:rw
+    ports:
+      - "30304:30304" # peer 연결용
+      - "30304:30304/udp" # peer 연결용
+      - "8546:8546"   # remix 연결용
+    networks:
+      priv-eth-net:
+        ipv4_address: 172.15.200.3
+
+  eth-netstats:
+    image: kamael/eth-netstats
+    container_name: eth-netstats
+    depends_on:
+      - node1
+    ports:
+      - "3002:3000" # 네트워크 모니터링 
+    environment:
+      - WS_SECRET=SURF
+    networks:
+      priv-eth-net:
+        ipv4_address: 172.15.200.4
+
+networks:
+  priv-eth-net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.15.200.0/28

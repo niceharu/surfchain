@@ -1,0 +1,7 @@
+version: '2'
+services:
+  init:
+    image: ethereum/client-go
+    command: init /root/.ethereum/genesis.json
+    volumes:
+      - ./data-node2:/root/.ethereum
