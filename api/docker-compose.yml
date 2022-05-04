@@ -1,0 +1,17 @@
+version: '3.3'
+ 
+services:
+  geth-api:
+    build: # Dockerfile 빌드
+      context: ./ # Dockerfile 빌드 경로
+    container_name: geth-api # 컨테이너 명
+    restart: "on-failure"
+    # expose:
+    #   - 5000 # 도커 내부적 포트
+    ports:
+      - 3003:3003
+    env_file:
+      -  ./common.env
+    environment: # 환경변수 설정
+      - NODE_ENV=production
+      - CHOKIDAR_USEPOLLING=true
